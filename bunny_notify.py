@@ -81,10 +81,10 @@ def notifyEvent(event):
                "  🐰Bunny \#{}\n"\
                "  🥕Price: {} BNB\n"\
                "  🥕Expiration: {} (UTC)\n"\
-               "  🛒[*__NFTKEY Marketplace__*](https://nftkey.app/collections/bnbbunnies/bunny\-details/?tokenId={})".format(
+               "  🛒[*__NFTKEY Marketplace__*](https://nftkey.app/collections/bnbbunnies/bunny-details/?tokenId={})".format(
                    tokenId,
                    price,
-                   md_escape(expiration),
+                   md_escape(str(expiration)),
                    tokenId)
         image = fetch(tokenId)
 
