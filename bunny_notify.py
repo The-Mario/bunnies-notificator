@@ -14,6 +14,8 @@ from cairosvg import svg2png
 
 import datetime
 
+import logging
+
 CHAT_ID = "@bunnies_notification"
 bot = None
 nftkey_cont = None
@@ -134,7 +136,9 @@ async def log_loop(event_filter, poll_interval):
 
 
 def main(bnny_cont_addr_1, bnny_cont_addr_2, nftkey_cont_addr, telegram_bot_token):
-    # print(w3.isConnected())
+    logging.basicConfig(level=logging.INFO)
+    logging.info("BunniesNotificator Start.")
+    logging.info("Websocket Connect: {}".format(w3.isConnected()))
 
     # bnny_abi_1 = json.loads(
     #     open(join(dirname(__file__), "bnny_abi_1.json")).read())
