@@ -80,7 +80,7 @@ def notifyEvent(event):
         text = "🏷*New Listing\!*\n"\
                "  🐰Bunny \#{}\n"\
                "  🥕Price: {} BNB\n"\
-               "  🥕Expiration: {} (UTC)\n"\
+               "  🥕Expiration: {} \(UTC\)\n"\
                "  🛒[*__NFTKEY Marketplace__*](https://nftkey.app/collections/bnbbunnies/bunny-details/?tokenId={})".format(
                    tokenId,
                    price,
