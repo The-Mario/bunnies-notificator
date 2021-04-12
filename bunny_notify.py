@@ -16,8 +16,8 @@ import datetime
 
 import logging
 
-# CHAT_ID = "@bunnies_notification"
-CHAT_ID = "@r3n_test_channel"
+CHAT_ID = "@bunnies_notification"
+# CHAT_ID = "@r3n_test_channel"
 bot = None
 nftkey_cont = None
 w3 = Web3(WebsocketProvider("wss://bsc-ws-node.nariox.org:443"))
@@ -158,8 +158,8 @@ def main(bnny_cont_addr_1, bnny_cont_addr_2, nftkey_cont_addr, telegram_bot_toke
     nftkey_abi = json.loads(
         open(join(dirname(__file__), "nftkey_abi.json")).read())
 
-    bnny_cont_1 = w3.eth.contract(address=bnny_cont_addr_1, abi=bnny_abi_1)
-    bnny_cont_2 = w3.eth.contract(address=bnny_cont_addr_2, abi=bnny_abi_2)
+    # bnny_cont_1 = w3.eth.contract(address=bnny_cont_addr_1, abi=bnny_abi_1)
+    # bnny_cont_2 = w3.eth.contract(address=bnny_cont_addr_2, abi=bnny_abi_2)
 
     global nftkey_cont
     nftkey_cont = w3.eth.contract(address=nftkey_cont_addr, abi=nftkey_abi)
