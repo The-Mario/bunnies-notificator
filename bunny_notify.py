@@ -16,7 +16,8 @@ import datetime
 
 import logging
 
-CHAT_ID = "@bunnies_notification"
+# CHAT_ID = "@bunnies_notification"
+CHAT_ID = "@r3n_test_channel"
 bot = None
 nftkey_cont = None
 w3 = Web3(WebsocketProvider("wss://bsc-ws-node.nariox.org:443"))
@@ -99,33 +100,43 @@ def notifyEvent(event):
     #            )
     elif eventName == "TokenBought":
         """ with image
-        💰Bunny #123 has been bought for 1.23 BNB!
+        💰Bunny Sold!
+          🐰Bunny #123
+          🥕Price: 1.23 BNB!
+          🥕Marketplace: NFTKEY
         """
 
         price = args["value"] / 1000000000000000000
         price = str(price).replace(".", "\.")
 
-        text = "💰Bunny *\#{}* has been bought for *{} BNB*\!\n".format(
-            tokenId, price)
+        text = "💰*Bunny Sold\!*\n"\
+               "  🐰Bunny \#{}\n"\
+               "  🥕Price: {} BNB\n"\
+               "  🥕Marketplace: [NFTKEY](https://nftkey.app/)".format(
+                   tokenId, price)
         image = fetch(tokenId)
 
     # elif eventName == "TokenBidAccepted":
     # elif eventName == "TokenBidEntered":
     # elif eventName == "TokenBidWithdrawn"
 
-    if image is None:
-        bot.send_message(
-            chat_id=CHAT_ID,
-            text=text,
-            parse_mode="MarkdownV2"
-        )
-    else:
-        bot.send_photo(
-            chat_id=CHAT_ID,
-            photo=image,
-            caption=text,
-            parse_mode="MarkdownV2"
-        )
+    # sold at original marketplace
+    # if eventName == "Transfar":
+
+    if text != "":
+        if image is None:
+            bot.send_message(
+                chat_id=CHAT_ID,
+                text=text,
+                parse_mode="MarkdownV2"
+            )
+        else:
+            bot.send_photo(
+                chat_id=CHAT_ID,
+                photo=image,
+                caption=text,
+                parse_mode="MarkdownV2"
+            )
 
 
 async def log_loop(event_filter, poll_interval):
@@ -140,15 +151,15 @@ def main(bnny_cont_addr_1, bnny_cont_addr_2, nftkey_cont_addr, telegram_bot_toke
     logging.info("BunniesNotificator Start.")
     logging.info("Websocket Connect: {}".format(w3.isConnected()))
 
-    # bnny_abi_1 = json.loads(
-    #     open(join(dirname(__file__), "bnny_abi_1.json")).read())
-    # bnny_abi_2 = json.loads(
-    #     open(join(dirname(__file__), "bnny_abi_2.json")).read())
+    bnny_abi_1 = json.loads(
+        open(join(dirname(__file__), "bnny_abi_1.json")).read())
+    bnny_abi_2 = json.loads(
+        open(join(dirname(__file__), "bnny_abi_2.json")).read())
     nftkey_abi = json.loads(
         open(join(dirname(__file__), "nftkey_abi.json")).read())
 
-    # bnny_cont_1 = w3.eth.contract(address=bnny_cont_addr_1, abi=bnny_abi_1)
-    # bnny_cont_2 = w3.eth.contract(address=bnny_cont_addr_2, abi=bnny_abi_2)
+    bnny_cont_1 = w3.eth.contract(address=bnny_cont_addr_1, abi=bnny_abi_1)
+    bnny_cont_2 = w3.eth.contract(address=bnny_cont_addr_2, abi=bnny_abi_2)
 
     global nftkey_cont
     nftkey_cont = w3.eth.contract(address=nftkey_cont_addr, abi=nftkey_abi)
@@ -210,11 +221,13 @@ def main(bnny_cont_addr_1, bnny_cont_addr_2, nftkey_cont_addr, telegram_bot_toke
     #     fromBlock="latest")
 
     # tx = w3.eth.get_transaction(
-    #     "0x18efbe3413c27c7883d5003e03a0b31c1ddb3a89c6cb9af9c6b9b14931e71aa7")
-    # # print(tx)
-    # funcInput = nftkey_cont.decode_function_input(tx.input)
-    # print(funcInput[1])
-
+    #     "0x4e1f4b306233788c4bd9cc2e3799e97a17cbf50644162643162d728047a6abd7")
+    # print(tx)
+    # funcInput = bnny_cont_1.decode_function_input(tx.input)
+    # print(funcInput)
+    # print(type(funcInput[0]))
+    # print(isinstance(type(funcInput[0]), type(bnny_cont_1.get_function_by_name(
+    #     "buyAnimalsFromUser"))))
     # return
 
     global bot
@@ -224,9 +237,9 @@ def main(bnny_cont_addr_1, bnny_cont_addr_2, nftkey_cont_addr, telegram_bot_toke
     try:
         loop.run_until_complete(
             asyncio.gather(
-                log_loop(nftkey_list, 60),
+                log_loop(nftkey_list, 30),
                 # log_loop(nftkey_delist, 60),
-                log_loop(nftkey_sold, 60),
+                log_loop(nftkey_sold, 30),
                 # log_loop(nftkey_bid_accepted, 30),
                 # log_loop(nftkey_bid_entered, 30),
                 # log_loop(nftkey_bid_withdrawn, 30)
