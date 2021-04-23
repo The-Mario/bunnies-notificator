@@ -18,12 +18,6 @@ import logging
 
 CHAT_ID = "@bunnies_notification"
 # CHAT_ID = "@r3n_test_channel"
-bot = None
-NFTKEY_CONT_ADDR = None
-nftkey_cont = None
-TELEGRAM_BOT_TOKEN = None
-w3 = Web3(WebsocketProvider("wss://bsc-ws-node.nariox.org:443"))
-# w3 = Web3(HTTPProvider("https://bsc-dataseed.binance.org/"))
 
 MD_ESCAPE = {
     '_': '\_', '*': '\*', '[': '\[', ']': '\]',
@@ -197,9 +191,9 @@ async def log_loop(event_filter, poll_interval):
     while True:
         # logging.info(datetime.datetime.now())
         for event in event_filter.get_new_entries():
-            logging.info(event["address"])
-            if (event["address"] == NFTKEY_CONT_ADDR):
-                notifyEvent(event)
+            # logging.info(type(event["address"]), event["address"])
+            # if (event["address"] == NFTKEY_CONT_ADDR):
+            notifyEvent(event)
         await asyncio.sleep(poll_interval)
 
 
@@ -208,18 +202,15 @@ def main():
     logging.info("BunniesNotificator Start.")
     logging.info("Endpoint connected: {}".format(w3.isConnected()))
 
-    bnny_abi_1 = json.loads(
-        open(join(dirname(__file__), "bnny_abi_1.json")).read())
-    bnny_abi_2 = json.loads(
-        open(join(dirname(__file__), "bnny_abi_2.json")).read())
-    nftkey_abi = json.loads(
-        open(join(dirname(__file__), "nftkey_abi.json")).read())
+    # bnny_abi_1 = json.loads(
+    #     open(join(dirname(__file__), "bnny_abi_1.json")).read())
+    # bnny_abi_2 = json.loads(
+    #     open(join(dirname(__file__), "bnny_abi_2.json")).read())
+    # nftkey_abi = json.loads(
+    #     open(join(dirname(__file__), "nftkey_abi.json")).read())
 
     # bnny_cont_1 = w3.eth.contract(address=bnny_cont_addr_1, abi=bnny_abi_1)
     # bnny_cont_2 = w3.eth.contract(address=bnny_cont_addr_2, abi=bnny_abi_2)
-
-    global nftkey_cont
-    nftkey_cont = w3.eth.contract(address=NFTKEY_CONT_ADDR, abi=nftkey_abi)
 
     # nftkey
     """
@@ -288,16 +279,13 @@ def main():
     # return
 
     # test_filter = nftkey_cont.events.TokenListed.createFilter(
-    #     fromBlock=6819460
+    #     fromBlock=6815000, toBlock=6820000
     # )
     # evs = test_filter.get_all_entries()
     # for ev in evs:
-    #     print(ev)
     #     print(ev["address"])
+    #     notifyEvent(ev)
     # return
-
-    global bot
-    bot = telegram.Bot(token=TELEGRAM_BOT_TOKEN)
 
     loop = asyncio.get_event_loop()
     try:
@@ -321,12 +309,19 @@ def load_env():
 
     # bnny_cont_addr_1 = os.environ.get("BNNY_CONTRACT_1")
     # bnny_cont_addr_2 = os.environ.get("BNNY_CONTRACT_2")
-    global NFTKEY_CONT_ADDR
-    NFTKEY_CONT_ADDR = os.environ.get("NFTKEY_CONTRACT")
-    global TELEGRAM_BOT_TOKEN
-    TELEGRAM_BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN")
+    nftkey_cont_addr = os.environ.get("NFTKEY_CONTRACT")
+    telegram_bot_token = os.environ.get("TELEGRAM_BOT_TOKEN")
+    return nftkey_cont_addr, telegram_bot_token
 
 
 if __name__ == '__main__':
-    load_env()
+    NFTKEY_CONT_ADDR, TELEGRAM_BOT_TOKEN = load_env()
+
+    # w3 = Web3(WebsocketProvider("wss://bsc-ws-node.nariox.org:443"))
+    w3 = Web3(HTTPProvider("https://bsc-dataseed.binance.org/"))
+    bot = telegram.Bot(token=TELEGRAM_BOT_TOKEN)
+    nftkey_abi = json.loads(
+        open(join(dirname(__file__), "nftkey_abi.json")).read())
+    nftkey_cont = w3.eth.contract(address=NFTKEY_CONT_ADDR, abi=nftkey_abi)
+
     main()
