@@ -16,12 +16,14 @@ import datetime
 
 import logging
 
-CHAT_ID = "@bunnies_notification"
-# CHAT_ID = "@r3n_test_channel"
+# CHAT_ID = "@bunnies_notification"
+CHAT_ID = "@r3n_test_channel"
 bot = None
+NFTKEY_CONT_ADDR = None
 nftkey_cont = None
-w3 = Web3(WebsocketProvider("wss://bsc-ws-node.nariox.org:443"))
-# w3 = Web3(HTTPProvider("https://bsc-dataseed.binance.org/"))
+TELEGRAM_BOT_TOKEN = None
+# w3 = Web3(WebsocketProvider("wss://bsc-ws-node.nariox.org:443"))
+w3 = Web3(HTTPProvider("https://bsc-dataseed.binance.org/"))
 
 MD_ESCAPE = {
     '_': '\_', '*': '\*', '[': '\[', ']': '\]',
@@ -194,11 +196,12 @@ def notifyEvent(event):
 async def log_loop(event_filter, poll_interval):
     while True:
         for event in event_filter.get_new_entries():
-            notifyEvent(event)
+            if (event["address"] == NFTKEY_CONT_ADDR):
+                notifyEvent(event)
         await asyncio.sleep(poll_interval)
 
 
-def main(bnny_cont_addr_1, bnny_cont_addr_2, nftkey_cont_addr, telegram_bot_token):
+def main():
     logging.basicConfig(level=logging.INFO)
     logging.info("BunniesNotificator Start.")
     logging.info("Endpoint connected: {}".format(w3.isConnected()))
@@ -214,7 +217,7 @@ def main(bnny_cont_addr_1, bnny_cont_addr_2, nftkey_cont_addr, telegram_bot_toke
     # bnny_cont_2 = w3.eth.contract(address=bnny_cont_addr_2, abi=bnny_abi_2)
 
     global nftkey_cont
-    nftkey_cont = w3.eth.contract(address=nftkey_cont_addr, abi=nftkey_abi)
+    nftkey_cont = w3.eth.contract(address=NFTKEY_CONT_ADDR, abi=nftkey_abi)
 
     # nftkey
     """
@@ -273,17 +276,26 @@ def main(bnny_cont_addr_1, bnny_cont_addr_2, nftkey_cont_addr, telegram_bot_toke
     #     fromBlock="latest")
 
     # tx = w3.eth.get_transaction(
-    #     "0x4e1f4b306233788c4bd9cc2e3799e97a17cbf50644162643162d728047a6abd7")
+    #     "0x2182fc10a41b361ff9a74c7b6993020c5c5265c3118ccfe5c3771bd6ee236812")
     # print(tx)
-    # funcInput = bnny_cont_1.decode_function_input(tx.input)
+    # funcInput = nftkey_cont.decode_function_input(tx.input)
     # print(funcInput)
-    # print(type(funcInput[0]))
-    # print(isinstance(type(funcInput[0]), type(bnny_cont_1.get_function_by_name(
-    #     "buyAnimalsFromUser"))))
+    # # print(type(funcInput[0]))
+    # # print(isinstance(type(funcInput[0]), type(bnny_cont_1.get_function_by_name(
+    # #     "buyAnimalsFromUser"))))
+    # return
+
+    # test_filter = nftkey_cont.events.TokenListed.createFilter(
+    #     fromBlock=6819460
+    # )
+    # evs = test_filter.get_all_entries()
+    # for ev in evs:
+    #     print(ev)
+    #     print(ev["address"])
     # return
 
     global bot
-    bot = telegram.Bot(token=telegram_bot_token)
+    bot = telegram.Bot(token=TELEGRAM_BOT_TOKEN)
 
     loop = asyncio.get_event_loop()
     try:
@@ -305,15 +317,14 @@ def load_env():
     dotenv_path = join(dirname(__file__), '.env')
     load_dotenv(dotenv_path)
 
-    bnny_cont_addr_1 = os.environ.get("BNNY_CONTRACT_1")
-    bnny_cont_addr_2 = os.environ.get("BNNY_CONTRACT_2")
-    nftkey_cont_addr = os.environ.get("NFTKEY_CONTRACT")
-    telegram_bot_token = os.environ.get("TELEGRAM_BOT_TOKEN")
-
-    return bnny_cont_addr_1, bnny_cont_addr_2, nftkey_cont_addr, telegram_bot_token
+    # bnny_cont_addr_1 = os.environ.get("BNNY_CONTRACT_1")
+    # bnny_cont_addr_2 = os.environ.get("BNNY_CONTRACT_2")
+    global NFTKEY_CONT_ADDR
+    NFTKEY_CONT_ADDR = os.environ.get("NFTKEY_CONTRACT")
+    global TELEGRAM_BOT_TOKEN
+    TELEGRAM_BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN")
 
 
 if __name__ == '__main__':
-    bnny_cont_addr_1, bnny_cont_addr_2, nftkey_cont_addr, telegram_bot_token = load_env()
-    main(bnny_cont_addr_1, bnny_cont_addr_2,
-         nftkey_cont_addr, telegram_bot_token)
+    load_env()
+    main()
