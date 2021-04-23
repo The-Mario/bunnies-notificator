@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from web3 import Web3, WebsocketProvider
+from web3 import Web3, WebsocketProvider, HTTPProvider
 import asyncio
 
 import telegram
@@ -20,8 +20,8 @@ CHAT_ID = "@bunnies_notification"
 # CHAT_ID = "@r3n_test_channel"
 bot = None
 nftkey_cont = None
-w3 = Web3(WebsocketProvider("wss://bsc-ws-node.nariox.org:443"))
-
+# w3 = Web3(WebsocketProvider("wss://bsc-ws-node.nariox.org:443"))
+w3 = Web3(HTTPProvider("https://bsc-dataseed.binance.org/"))
 
 MD_ESCAPE = {
     '_': '\_', '*': '\*', '[': '\[', ']': '\]',
@@ -72,6 +72,7 @@ def notifyEvent(event):
           🥕Price: 1.23 BNB
           🥕Expiration: ???
           🛒https://nftkey.app/collections/bnbbunnies/bunny-details/?tokenId=123
+          🔎https://bscscan.com/tx/{txHash}?
         """
         price = args["minValue"] / 1000000000000000000
         price = str(price).replace(".", "\.")
@@ -82,11 +83,13 @@ def notifyEvent(event):
                "  🐰Bunny \#{}\n"\
                "  🥕Price: {} BNB\n"\
                "  🥕Expiration: {} \(UTC\)\n"\
-               "  🛒[*__NFTKEY Marketplace__*](https://nftkey.app/collections/bnbbunnies/bunny-details/?tokenId={})".format(
+               "  🛒[*__NFTKEY Marketplace__*](https://nftkey.app/collections/bnbbunnies/bunny-details/?tokenId={})\n"\
+               "  🔎[__Tx at bscscan__](https://bscscan.com/tx/{}?)".format(
                    tokenId,
                    price,
                    md_escape(str(expiration)),
-                   tokenId)
+                   tokenId,
+                   txHash)
         image = fetch(tokenId)
 
     # elif eventName == "TokenDelisted":
@@ -103,7 +106,7 @@ def notifyEvent(event):
         💰Bunny Sold!
           🐰Bunny #123
           🥕Price: 1.23 BNB!
-          🥕Marketplace: NFTKEY
+          🔎https://bscscan.com/tx/{txHash}?
         """
 
         price = args["value"] / 1000000000000000000
@@ -112,8 +115,8 @@ def notifyEvent(event):
         text = "💰*Bunny Sold\!*\n"\
                "  🐰Bunny \#{}\n"\
                "  🥕Price: {} BNB\n"\
-               "  🥕Marketplace: [NFTKEY](https://nftkey.app/)".format(
-                   tokenId, price)
+               "  🔎[__Tx at bscscan__](https://bscscan.com/tx/{}?)".format(
+                   tokenId, price, txHash)
         image = fetch(tokenId)
 
     # elif eventName == "TokenBidAccepted":
@@ -149,7 +152,7 @@ async def log_loop(event_filter, poll_interval):
 def main(bnny_cont_addr_1, bnny_cont_addr_2, nftkey_cont_addr, telegram_bot_token):
     logging.basicConfig(level=logging.INFO)
     logging.info("BunniesNotificator Start.")
-    logging.info("Websocket Connect: {}".format(w3.isConnected()))
+    logging.info("Endpoint connected: {}".format(w3.isConnected()))
 
     bnny_abi_1 = json.loads(
         open(join(dirname(__file__), "bnny_abi_1.json")).read())
