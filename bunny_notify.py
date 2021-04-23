@@ -20,8 +20,8 @@ CHAT_ID = "@bunnies_notification"
 # CHAT_ID = "@r3n_test_channel"
 bot = None
 nftkey_cont = None
-# w3 = Web3(WebsocketProvider("wss://bsc-ws-node.nariox.org:443"))
-w3 = Web3(HTTPProvider("https://bsc-dataseed.binance.org/"))
+w3 = Web3(WebsocketProvider("wss://bsc-ws-node.nariox.org:443"))
+# w3 = Web3(HTTPProvider("https://bsc-dataseed.binance.org/"))
 
 MD_ESCAPE = {
     '_': '\_', '*': '\*', '[': '\[', ']': '\]',
