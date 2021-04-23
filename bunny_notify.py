@@ -22,8 +22,8 @@ bot = None
 NFTKEY_CONT_ADDR = None
 nftkey_cont = None
 TELEGRAM_BOT_TOKEN = None
-# w3 = Web3(WebsocketProvider("wss://bsc-ws-node.nariox.org:443"))
-w3 = Web3(HTTPProvider("https://bsc-dataseed.binance.org/"))
+w3 = Web3(WebsocketProvider("wss://bsc-ws-node.nariox.org:443"))
+# w3 = Web3(HTTPProvider("https://bsc-dataseed.binance.org/"))
 
 MD_ESCAPE = {
     '_': '\_', '*': '\*', '[': '\[', ']': '\]',
@@ -195,7 +195,9 @@ def notifyEvent(event):
 
 async def log_loop(event_filter, poll_interval):
     while True:
+        # logging.info(datetime.datetime.now())
         for event in event_filter.get_new_entries():
+            logging.info(event["address"])
             if (event["address"] == NFTKEY_CONT_ADDR):
                 notifyEvent(event)
         await asyncio.sleep(poll_interval)
