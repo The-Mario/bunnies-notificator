@@ -70,7 +70,7 @@ def notifyEvent(event):
         🏷New Listing!
           🐰Bunny #123
           🥕Price: 1.23 BNB
-          🥕Expiration: ???
+          🥕EXP: ???
           🛒https://nftkey.app/collections/bnbbunnies/bunny-details/?tokenId=123
           🔎https://bscscan.com/tx/{txHash}?
         """
@@ -82,7 +82,7 @@ def notifyEvent(event):
         text = "🏷*New Listing\!*\n"\
                "  🐰Bunny \#{}\n"\
                "  🥕Price: {} BNB\n"\
-               "  🥕Expiration: {} \(UTC\)\n"\
+               "  🥕EXP: {} \(UTC\)\n"\
                "  🛒[*__NFTKEY Marketplace__*](https://nftkey.app/collections/bnbbunnies/bunny-details/?tokenId={})\n"\
                "  🔎[__Tx at bscscan__](https://bscscan.com/tx/{}?)".format(
                    tokenId,
@@ -92,20 +92,23 @@ def notifyEvent(event):
                    txHash)
         image = fetch(tokenId)
 
-    # elif eventName == "TokenDelisted":
-    #     """ text only
-    #     🚫Cancel Listing!
-    #       🐰Bunny #123
-    #     """
-    #     text = "🚫*Cancel Listing\!*\n"\
-    #            "  🐰Bunny \#{}".format(
-    #                tokenId
-    #            )
+    elif eventName == "TokenDelisted":
+        """ text only
+        🚫Cancel Listing
+          🐰Bunny #123
+          🔎Tx at bscscan
+        """
+        text = "🚫*Cancel Listing\!*\n"\
+               "  🐰Bunny \#{}\n"\
+               "  🔎[__Tx at bscscan__](https://bscscan.com/tx/{}?)".format(
+                   tokenId, txHash
+               )
     elif eventName == "TokenBought":
         """ with image
         💰Bunny Sold!
           🐰Bunny #123
           🥕Price: 1.23 BNB!
+          🛒https://nftkey.app/collections/bnbbunnies/
           🔎https://bscscan.com/tx/{txHash}?
         """
 
@@ -119,9 +122,55 @@ def notifyEvent(event):
                    tokenId, price, txHash)
         image = fetch(tokenId)
 
-    # elif eventName == "TokenBidAccepted":
-    # elif eventName == "TokenBidEntered":
-    # elif eventName == "TokenBidWithdrawn"
+    elif eventName == "TokenBidAccepted":
+        """
+        💰Bid Accepted!
+          🐰Bunny #123
+          🥕Price: 1.23 BNB!
+          🔎https://bscscan.com/tx/{txHash}?
+        """
+        price = args["value"] / 1000000000000000000
+        price = str(price).replace(".", "\.")
+        text = "💰*Bid Accepted*\n"\
+               "  🐰Bunny \#{}\n"\
+               "  🥕Price: {} BNB\n"\
+               "  🔎[__Tx at bscscan__](https://bscscan.com/tx/{}?)".format(
+                   tokenId, price, txHash)
+        image = fetch(tokenId)
+
+    elif eventName == "TokenBidEntered":
+        """
+        💵New Bid!
+          🐰Bunny #123
+          🥕Price: 1.23 BNB!
+          🥕Bid EXP: {} (UTC)
+          🔎https://bscscan.com/tx/{txHash}?
+        """
+        price = args["value"] / 1000000000000000000
+        price = str(price).replace(".", "\.")
+        expiration = datetime.datetime.utcfromtimestamp(
+            funcInput["expireTimestamp"])
+        text = "💵*New Bid\!*\n"\
+               "  🐰Bunny \#{}\n"\
+               "  🥕Price: {} BNB\n"\
+               "  🥕Bid EXP: {} \(UTC\)\n"\
+               "  🛒[*__NFTKEY Marketplace__*](https://nftkey.app/collections/bnbbunnies/bunny-details/?tokenId={})\n"\
+               "  🔎[__Tx at bscscan__](https://bscscan.com/tx/{}?)".format(
+                   tokenId, price, expiration, tokenId, txHash
+               )
+        image = fetch(tokenId)
+    # elif eventName == "TokenBidWithdrawn":
+    #     """
+    #     🚫Withdraw Bid
+    #       🐰Bunny #123
+    #       🛒https://nftkey.app/collections/bnbbunnies/bunny-details/?tokenId={tokenId}
+    #       🔎https://bscscan.com/tx/{txHash}?
+    #     """
+    #     text = "🚫*Withdraw Bid*\n"\
+    #            "  🐰Bunny \#{}\n"\
+    #            "  🛒[*__NFTKEY Marketplace__*](https://nftkey.app/collections/bnbbunnies/bunny-details/?tokenId={})\n"\
+    #            "  🔎[__Tx at bscscan__](https://bscscan.com/tx/{}?)".format(
+    #                tokenId, tokenId, txHash)
 
     # sold at original marketplace
     # if eventName == "Transfar":
@@ -181,8 +230,8 @@ def main(bnny_cont_addr_1, bnny_cont_addr_2, nftkey_cont_addr, telegram_bot_toke
     args: tokenId - int
           fromAddress - address (str)
     """
-    # nftkey_delist = nftkey_cont.events.TokenDelisted.createFilter(
-    #     fromBlock="latest")
+    nftkey_delist = nftkey_cont.events.TokenDelisted.createFilter(
+        fromBlock="latest")
     """
     TokenBought()
     args: tokenId - int
@@ -204,16 +253,16 @@ def main(bnny_cont_addr_1, bnny_cont_addr_2, nftkey_cont_addr, telegram_bot_toke
           value - int
           fees - int
     """
-    # nftkey_bid_accepted = nftkey_cont.events.TokenBidAccepted.createFilter(
-    #     fromBlock="latest")
+    nftkey_bid_accepted = nftkey_cont.events.TokenBidAccepted.createFilter(
+        fromBlock="latest")
     """
     TokenBidEntered()
     args: tokenId - int
           fromAddress - address (str)
           value - int
     """
-    # nftkey_bid_entered = nftkey_cont.events.TokenBidEntered.createFilter(
-    #     fromBlock="latest")
+    nftkey_bid_entered = nftkey_cont.events.TokenBidEntered.createFilter(
+        fromBlock="latest")
     """
     TokenBidWithdrawn()
     args: tokenId - int
@@ -241,10 +290,10 @@ def main(bnny_cont_addr_1, bnny_cont_addr_2, nftkey_cont_addr, telegram_bot_toke
         loop.run_until_complete(
             asyncio.gather(
                 log_loop(nftkey_list, 30),
-                # log_loop(nftkey_delist, 60),
+                log_loop(nftkey_delist, 30),
                 log_loop(nftkey_sold, 30),
-                # log_loop(nftkey_bid_accepted, 30),
-                # log_loop(nftkey_bid_entered, 30),
+                log_loop(nftkey_bid_accepted, 30),
+                log_loop(nftkey_bid_entered, 30),
                 # log_loop(nftkey_bid_withdrawn, 30)
             )
         )
