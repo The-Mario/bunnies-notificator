@@ -16,8 +16,8 @@ import datetime
 
 import logging
 
-# CHAT_ID = "@bunnies_notification"
-CHAT_ID = "@r3n_test_channel"
+CHAT_ID = "@bunnies_notification"
+# CHAT_ID = "@r3n_test_channel"
 
 MD_ESCAPE = {
     '_': '\_', '*': '\*', '[': '\[', ']': '\]',
