@@ -16,8 +16,6 @@ import datetime
 
 import logging
 
-CHAT_ID = "@bunnies_notification"
-# CHAT_ID = "@r3n_test_channel"
 
 MD_ESCAPE = {
     '_': '\_', '*': '\*', '[': '\[', ']': '\]',
@@ -311,11 +309,12 @@ def load_env():
     # bnny_cont_addr_2 = os.environ.get("BNNY_CONTRACT_2")
     nftkey_cont_addr = os.environ.get("NFTKEY_CONTRACT")
     telegram_bot_token = os.environ.get("TELEGRAM_BOT_TOKEN")
-    return nftkey_cont_addr, telegram_bot_token
+    chat_id = os.environ.get("CHAT_ID")
+    return nftkey_cont_addr, telegram_bot_token, chat_id
 
 
 if __name__ == '__main__':
-    NFTKEY_CONT_ADDR, TELEGRAM_BOT_TOKEN = load_env()
+    NFTKEY_CONT_ADDR, TELEGRAM_BOT_TOKEN, CHAT_ID = load_env()
 
     # w3 = Web3(WebsocketProvider("wss://bsc-ws-node.nariox.org:443"))
     w3 = Web3(HTTPProvider("https://bsc-dataseed.binance.org/"))
