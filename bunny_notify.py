@@ -16,8 +16,8 @@ import datetime
 
 import logging
 
-CHAT_ID = "@bunnies_notification"
-# CHAT_ID = "@r3n_test_channel"
+# CHAT_ID = "@bunnies_notification"
+CHAT_ID = "@r3n_test_channel"
 
 MD_ESCAPE = {
     '_': '\_', '*': '\*', '[': '\[', ']': '\]',
@@ -249,7 +249,7 @@ def main():
           value - int
           fees - int
     """
-    nftkey_bid_accepted = nftkey_cont.events.TokenBidAccepted.createFilter(
+    nftkey_bidAccept = nftkey_cont.events.TokenBidAccepted.createFilter(
         fromBlock="latest")
     """
     TokenBidEntered()
@@ -257,7 +257,7 @@ def main():
           fromAddress - address (str)
           value - int
     """
-    nftkey_bid_entered = nftkey_cont.events.TokenBidEntered.createFilter(
+    nftkey_bidEnter = nftkey_cont.events.TokenBidEntered.createFilter(
         fromBlock="latest")
     """
     TokenBidWithdrawn()
@@ -292,10 +292,10 @@ def main():
         loop.run_until_complete(
             asyncio.gather(
                 log_loop(nftkey_list, 30),
-                log_loop(nftkey_delist, 30),
+                # log_loop(nftkey_delist, 30),
                 log_loop(nftkey_sold, 30),
-                log_loop(nftkey_bid_accepted, 30),
-                log_loop(nftkey_bid_entered, 30),
+                # log_loop(nftkey_bidAccept, 30),
+                # log_loop(nftkey_bidEnter, 30),
                 # log_loop(nftkey_bid_withdrawn, 30)
             )
         )
